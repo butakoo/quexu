@@ -1,7 +1,0 @@
-{
- "id":"./", "name":"雀序 · 本地账号版", "short_name":"雀序",
- "description":"在麻将牌桌上经营你的胜局。每位本机玩家独立保存进度。",
- "start_url":"./", "scope":"./", "display":"standalone",
- "background_color":"#123f36", "theme_color":"#123f36", "lang":"zh-CN",
- "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}]
-}
