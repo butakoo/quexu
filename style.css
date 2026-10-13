@@ -65,3 +65,9 @@
 @media(prefers-reduced-motion:reduce){.preparation-banner,.table-pushing .edge-hand .hidden-tiles,.table-pushing .hand-tiles{animation:none!important}.river-grid .river-pickable{transition:none}}
 
 @keyframes prep-arrive{from{opacity:0;transform:translate(-50%,10px) scale(.95)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+
+/* Glazed ivory, inset pigment and polished rim. */
+/* Flexible bars must leave room for a visible component count at every tier. */
+.trait-label{min-width:0}.trait-bars{width:100%}.trait-bars i{width:auto;min-width:2px;max-width:none}.trait-count{flex-shrink:0;white-space:nowrap}.trait-icon{flex-shrink:0}
+.tile-face{background:radial-gradient(ellipse at 26% 12%,#fffef8 0%,#f5f1df 48%,#e2dcc5 100%);border-color:#d0c7ad;box-shadow:inset 1px 1px 2px #ffffffd9,inset -1px -2px 3px #8c7b4933,0 4px 0 #a7b79b,0 6px 6px #072b2333}.tile-face>svg{filter:drop-shadow(0 1px 0 #ffffffa8)}.trait-bars{display:flex;gap:3px}.trait-bars i{flex:1;min-width:4px;max-width:18px}.tip-tiers{grid-template-columns:repeat(auto-fit,minmax(54px,1fr))}
+.trait-label{min-width:0}.trait-bars{width:100%}.trait-bars i{width:auto;min-width:2px;max-width:none}.trait-count{flex-shrink:0;white-space:nowrap}.trait-icon{flex-shrink:0}
