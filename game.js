@@ -1,5 +1,5 @@
-import {calculateTrace} from './scoring.js?v=0.10.0';
-export const RULESET_VERSION=10;
+import {calculateTrace} from './scoring.js?v=0.11.0';
+export const RULESET_VERSION=11;
 export const TRAIT_REWARDS=Object.freeze([0,1,2,3,4,5,6,7]);
 export const SUITS=['万','筒','索'], HONORS=['东','南','西','北','中','发','白'], FLOWERS=['春','夏','秋','冬','梅','兰','竹','菊'];
 export const COLORS={red:'红宝',green:'绿牌',cyan:'青宝'}, MATERIALS={gold:'黄金',jade:'玉',crystal:'水晶',diamond:'钻石'};
@@ -25,9 +25,9 @@ export const TRAIT_STEPS=Object.freeze({
 export const TRAIT_CATALOG=[
  ['flush','清一色','同色数牌','◈','选择万、筒、索中组件最多的一门；按该门实体牌张计数。',RCR],
  ['pungs','对对和','刻子牌张','▥','互不复用的同身份三张组成刻子，计入刻子的牌张数。',RCR],
- ['pairs','小七对','对子牌张','◫','互不复用的同身份两张组成对子，计入对子牌张数；不同对子可同牌面。激活后原牌面组成的对子可以参与基础计分，纹路仅增加羁绊组件。',RCR],
+ ['pairs','小七对','对子牌张','◫','互不复用的同身份两张组成对子，计入对子牌张数；不同对子可同牌面。激活后全部原牌面对子独立计符，可再次使用常规四搭及雀头的牌；同一对子轮次内不复用。纹路仅增加羁绊组件。',RCR],
  ['pure-outside','纯全幺','每组带幺','幺','互不复用的123、789顺子或111、999刻子，每搭三张；可加一个11或99雀头，不计字牌。六档依次为两搭、两搭带雀头、三搭、三搭带雀头、四搭、四搭带雀头。',RCR],
- ['green','绿一色','绿牌组件','❖','特殊颜色为绿的实体数；这是本游戏绿牌规则，不是传统23468索与发。',RCR],
+ ['green','绿一色','绿牌组件','❖','二、三、四、六、八索及发为绿一色身份；任何特殊绿牌也可计入。纹路身份有效，同一实体只计一次。',RCR],
  ['simples','断幺九','二至八组件','◇','含二至八数牌身份的实体数。',RCR],
  ['half-flush','混一色','一门与字牌','◉','至少两张不同实体分别承担一种数牌花色和字牌后，计算这一门与字牌的实体总数。',RCR],
  ['honors','字一色','字牌组件','字','含东南西北中发白身份的实体数。',RCR],
@@ -61,53 +61,71 @@ export function traitData(tiles){
  }
  for(let start=1;start<=7;start++)mixedChows=Math.max(mixedChows,familyCount([0,1,2].map(s=>masks(seq(s,start)))));
  const faceSlots=(faces,copies)=>faces.flatMap(f=>Array.from({length:copies},()=>x=>x===f)),orphanFaces=[...Array.from({length:3},(_,s)=>[`${s}-1`,`${s}-9`]).flat(),...HONORS.map((_,i)=>`h-${i}`)];
- const values={flush:counts[suit],pungs:grouped(ids,3),pairs:grouped(ids,2),green:tiles.filter(t=>t.color==='green').length,simples:count(d=>d.s<3&&d.n>=2&&d.n<=8),'half-flush':Math.max(...[0,1,2].map(s=>mixed([d=>d.s===s,honor]))),honors:count(honor),dragons:matchingCount(ids,faceSlots(['h-4','h-5','h-6'],3)),winds:matchingCount(ids,faceSlots(['h-0','h-1','h-2','h-3'],3)),'mixed-chows':mixedChows,straight,upper:count(d=>d.s<3&&d.n>=7),middle:count(d=>d.s<3&&d.n>=4&&d.n<=6),lower:count(d=>d.s<3&&d.n<=3),'five-gates':mixed([d=>d.s===0,d=>d.s===1,d=>d.s===2,d=>d.s===3&&d.n<4,d=>d.s===3&&d.n>=4]),orphans:matchingCount(ids,faceSlots(orphanFaces,1))};
+ const values={flush:counts[suit],pungs:grouped(ids,3),pairs:grouped(ids,2),green:tiles.filter((t,i)=>t.color==='green'||ids[i].some(f=>['2-2','2-3','2-4','2-6','2-8','h-5'].includes(f))).length,simples:count(d=>d.s<3&&d.n>=2&&d.n<=8),'half-flush':Math.max(...[0,1,2].map(s=>mixed([d=>d.s===s,honor]))),honors:count(honor),dragons:matchingCount(ids,faceSlots(['h-4','h-5','h-6'],3)),winds:matchingCount(ids,faceSlots(['h-0','h-1','h-2','h-3'],3)),'mixed-chows':mixedChows,straight,upper:count(d=>d.s<3&&d.n>=7),middle:count(d=>d.s<3&&d.n>=4&&d.n<=6),lower:count(d=>d.s<3&&d.n<=3),'five-gates':mixed([d=>d.s===0,d=>d.s===1,d=>d.s===2,d=>d.s===3&&d.n<4,d=>d.s===3&&d.n>=4]),orphans:matchingCount(ids,faceSlots(orphanFaces,1))};
  values['pure-outside']=packedCount(outsideOptions,ids.length);
  for(let s=0;s<3;s++)for(const n of [1,9])for(const pair of masks(Array(2).fill(`${s}-${n}`)))values['pure-outside']=Math.max(values['pure-outside'],2+packedCount(outsideOptions.filter(m=>!(m&pair)),ids.length));
  if(values.orphans===13&&orphanFaces.some(f=>matchingCount(ids,faceSlots([...orphanFaces,f],1))===14))values.orphans=14;
  const traits=TRAIT_CATALOG.map(t=>({...t,count:values[t.id],stage:t.thresholds.filter(n=>values[t.id]>=n).length}));for(const t of traits)t.fan=TRAIT_REWARDS[t.stage];traits[0].detail=`${SUITS[suit]}子组件`;
  if(cache.size>4000)cache.clear();cache.set(key,traits);return traits.map(t=>({...t}));
 }
-// Choose disjoint physical groups for base points. Patterns remain trait-only.
+// Prefer up to four normal melds, then one eye, then a separate seven-pairs pass.
+// Physical masks prevent reuse within each pass. Patterns remain trait-only.
 function scoringGroups(tiles,values,traits,melds=[]){
  const n=tiles.length,options=[],fixed=[];let reserved=0;
- const add=(indices,kind)=>options.push({mask:indices.reduce((m,i)=>m|(1<<i),0),indices,kind,value:indices.reduce((v,i)=>v+values[i],0)});
- for(const meld of melds){const indices=meld.tiles.map(t=>tiles.findIndex(x=>x.uid===t.uid));if(indices.every(i=>i>=0)){const mask=indices.reduce((m,i)=>m|(1<<i),0);if(!(mask&reserved)){reserved|=mask;fixed.push({mask,indices,kind:meld.kind==='杠'?'杠':meld.kind==='碰'?'刻子':'顺子',value:indices.reduce((v,i)=>v+values[i],0)});}}}
+ const add=(indices,kind,phase)=>options.push({mask:indices.reduce((m,i)=>m|(1<<i),0),indices,kind,phase,value:indices.reduce((v,i)=>v+values[i],0)});
+ for(const meld of melds){const indices=meld.tiles.map(t=>tiles.findIndex(x=>x.uid===t.uid));if(indices.every(i=>i>=0)){const mask=indices.reduce((m,i)=>m|(1<<i),0);if(!(mask&reserved)){reserved|=mask;fixed.push({mask,indices,kind:meld.kind==='杠'?'杠':meld.kind==='碰'?'刻子':'顺子',phase:'normal',value:indices.reduce((v,i)=>v+values[i],0)});}}}
  const pairs=traits.find(t=>t.id==='pairs').stage>0,orphans=traits.find(t=>t.id==='orphans').count>=9;
  for(let i=0;i<n;i++){
   if(reserved&(1<<i))continue;const d=info(tiles[i]);
-  if(orphans&&(d.s===3||d.s<3&&[1,9].includes(d.n)))add([i],'国士');
+  if(orphans&&(d.s===3||d.s<3&&[1,9].includes(d.n)))add([i],'国士','orphans');
   for(let j=i+1;j<n;j++){
    if(reserved&(1<<j))continue;
-   if(pairs&&tiles[i].face===tiles[j].face)add([i,j],'对子');
+   if(tiles[i].face===tiles[j].face)add([i,j],'雀头','eye');
    for(let k=j+1;k<n;k++){
     if(reserved&(1<<k))continue;const trio=[i,j,k],ds=trio.map(x=>info(tiles[x]));
-    if(ds.every(x=>x.id===d.id))add(trio,'刻子');
-    else if(d.s<3&&ds.every(x=>x.s===d.s)){const nums=ds.map(x=>x.n).sort((a,b)=>a-b);if(nums[1]===nums[0]+1&&nums[2]===nums[1]+1)add(trio,'顺子');}
+    if(ds.every(x=>x.id===d.id))add(trio,'刻子','normal');
+    else if(d.s<3&&ds.every(x=>x.s===d.s)){const nums=ds.map(x=>x.n).sort((a,b)=>a-b);if(nums[1]===nums[0]+1&&nums[2]===nums[1]+1)add(trio,'顺子','normal');}
    }
   }
  }
  const byTile=Array.from({length:n},()=>[]);for(const o of options)for(const i of o.indices)byTile[i].push(o);
- const memo=new Map();function solve(mask){if(!mask)return {value:0,groups:[]};if(memo.has(mask))return memo.get(mask);let i=0;while(!(mask&(1<<i)))i++;let best=solve(mask&~(1<<i));for(const o of byTile[i])if((mask&o.mask)===o.mask){const rest=solve(mask&~o.mask),value=o.value+rest.value;if(value>best.value)best={value,groups:[o,...rest.groups]};}memo.set(mask,best);return best;}
- return [...fixed,...solve(((1<<n)-1)&~reserved).groups].map(g=>({kind:g.kind,uids:g.indices.map(i=>tiles[i].uid),base:g.value}));
+ const memo=new Map();function solve(mask,remaining,eye){if(!mask)return {value:0,melds:0,eye:0,groups:[]};const key=mask+':'+remaining+':'+eye;if(memo.has(key))return memo.get(key);let i=0;while(!(mask&(1<<i)))i++;let best=solve(mask&~(1<<i),remaining,eye);
+  for(const o of byTile[i])if((mask&o.mask)===o.mask&&(o.phase!=='normal'||remaining>0)&&(o.phase!=='eye'||eye)){
+   const rest=solve(mask&~o.mask,remaining-(o.phase==='normal'?1:0),eye&&o.phase!=='eye'),candidate={value:o.value+rest.value,melds:rest.melds+(o.phase==='normal'?1:0),eye:rest.eye+(o.phase==='eye'?1:0),groups:[o,...rest.groups]};
+   if(candidate.melds>best.melds||candidate.melds===best.melds&&(candidate.value>best.value||candidate.value===best.value&&candidate.eye>best.eye))best=candidate;
+  }memo.set(key,best);return best;
+ }
+ const pairGroups=[];
+ if(pairs){const faces=new Map();for(let i=0;i<n;i++){const face=tiles[i].face;if(!faces.has(face))faces.set(face,[]);faces.get(face).push(i);}for(const indices of faces.values()){indices.sort((a,b)=>values[b]-values[a]||tiles[a].uid-tiles[b].uid);for(let j=0;j+1<indices.length;j+=2){const pair=indices.slice(j,j+2);pairGroups.push({indices:pair,kind:'小七对子',phase:'pairs',value:pair.reduce((v,i)=>v+values[i],0)});}}}
+ const phases={normal:0,eye:1,pairs:2,orphans:3};
+ return [...fixed,...solve(((1<<n)-1)&~reserved,Math.max(0,4-fixed.length),true).groups,...pairGroups].map(g=>({...g,indices:g.indices.slice().sort((a,b)=>TYPES.indexOf(info(tiles[a]))-TYPES.indexOf(info(tiles[b]))||tiles[a].uid-tiles[b].uid)})).sort((a,b)=>phases[a.phase]-phases[b.phase]||TYPES.indexOf(info(tiles[a.indices[0]]))-TYPES.indexOf(info(tiles[b.indices[0]]))||tiles[a.indices[0]].uid-tiles[b.indices[0]].uid).map(g=>({kind:g.kind,phase:g.phase,uids:g.indices.map(i=>tiles[i].uid),base:g.value}));
+}
+// Arrange a view, never the physical hand: changing order would change left-copy wilds.
+export function arrangeShowcase(tiles,result){
+ const byUid=new Map(tiles.map(t=>[t.uid,t])),used=new Set(),groups=[];
+ for(const g of result.groups||[]){const members=g.uids.filter(uid=>byUid.has(uid)&&!used.has(uid)).map(uid=>{used.add(uid);return byUid.get(uid);});if(members.length)groups.push({kind:g.kind,phase:g.phase||'normal',tiles:members});}
+ const copies=new Map((result.wildCopies||[]).map(c=>[c.uid,c.face]));
+ const spare=tiles.filter(t=>!used.has(t.uid)).slice().sort((a,b)=>TYPES.indexOf(info(copies.get(a.uid)||a.face))-TYPES.indexOf(info(copies.get(b.uid)||b.face))||a.uid-b.uid);
+ if(spare.length)groups.push({kind:'散牌',phase:'spare',tiles:spare});return groups;
 }
 function rawScore(tiles,indicators=[],config=CONFIG,melds=[]){
  config={...CONFIG,...config};
  const traits=traitData(tiles),red=tiles.filter(t=>t.color==='red').length,green=tiles.filter(t=>t.color==='green').length,cyan=tiles.filter(t=>t.color==='cyan').length,chicken=tiles.filter(t=>['2-1','1-8'].includes(t.face)).length;
  const values=tiles.map(t=>{let v=info(t).value+(['red','green'].includes(t.color)?2:0);if(chicken>=2&&['2-1','1-8'].includes(t.face))v*=2;return v;});
  const groups=scoringGroups(tiles,values,traits,melds),scoredUids=new Set(groups.flatMap(g=>g.uids));
- const lines=tiles.map((t,i)=>({uid:t.uid,face:t.face,name:info(t).name,base:scoredUids.has(t.uid)?values[i]:0,potential:values[i],scored:scoredUids.has(t.uid),fan:t.material==='crystal'?config.crystalFan:0}));
+ const lines=tiles.map((t,i)=>({uid:t.uid,face:t.face,name:info(t).name,base:values[i]*groups.filter(g=>g.uids.includes(t.uid)).length,passes:groups.filter(g=>g.uids.includes(t.uid)).length,potential:values[i],scored:scoredUids.has(t.uid),fan:t.material==='crystal'?config.crystalFan:0}));
  const base=lines.reduce((a,t)=>a+t.base,0),colorFan=red+green+cyan*red,materialFan=lines.reduce((a,t)=>a+t.fan,0),traitFan=traits.reduce((a,t)=>a+t.fan,0),fan=colorFan+traitFan;
  const doraTiles=red>=2?tiles.filter(t=>indicators.some(f=>nextDora(f)===t.face)):[],dora=red>=2?tiles.reduce((a,t)=>a+indicators.filter(f=>nextDora(f)===t.face).length*3,0):0;
- const additions=groups.map(g=>({label:g.kind,uids:g.uids,amount:g.base}));if(dora)additions.push({label:'宝牌加符',uids:doraTiles.map(t=>t.uid),amount:dora});
+ const additions=groups.map(g=>({label:g.kind,phase:g.phase,uids:g.uids,amount:g.base}));if(dora)additions.push({label:'宝牌加符',uids:doraTiles.map(t=>t.uid),amount:dora});
  const extras=[];for(const t of tiles){if(t.material==='jade'&&(t.growth||1)>1)extras.push({label:'玉牌成长',material:'jade',uid:t.uid,factor:t.growth});if(t.material==='diamond'&&(t.diamond||1)>1)extras.push({label:'钻石鸣牌',material:'diamond',uid:t.uid,factor:t.diamond});if(t.material==='crystal')extras.push({label:'水晶独立'+config.crystalFan+'番',material:'crystal',uid:t.uid,factor:1+config.crystalFan*config.fanRate});}
- const fanMultiplier=1+fan*config.fanRate,trace=calculateTrace(additions,fanMultiplier,extras);
- return {base,symbols:base+dora,fan,fanMultiplier,colorFan,materialFan,traitFan,dora,total:trace.total,trace,additions,extras,traits,red,green,cyan,chicken,lines,groups,scoredCount:scoredUids.size,rulesVersion:RULESET_VERSION};
+ const reveals=traits.filter(t=>t.stage).map(t=>({label:t.name,traitId:t.id,count:t.count,stage:t.stage,fan:t.fan}));if(colorFan)reveals.push({label:'颜色加番',fan:colorFan});
+ const fanMultiplier=1+fan*config.fanRate,trace=calculateTrace(additions,fanMultiplier,extras,reveals);
+ return {base,symbols:base+dora,fan,fanMultiplier,colorFan,materialFan,traitFan,dora,total:trace.total,trace,additions,extras,reveals,traits,red,green,cyan,chicken,lines,groups,scoredCount:scoredUids.size,rulesVersion:RULESET_VERSION};
 }
 export function applyChicken(result,attackers=[],config=CONFIG){
  const factor=1-(config.chickenPenalty??CONFIG.chickenPenalty),extras=result.extras.slice();
  for(const attacker of attackers)for(const line of result.lines)if(['2-1','1-8'].includes(line.face))extras.push({label:'捉鸡压制 · '+attacker.name,uid:line.uid,sourceSeat:attacker.seat,kind:'chicken',factor});
- const trace=calculateTrace(result.additions,result.fanMultiplier,extras);
+ const trace=calculateTrace(result.additions,result.fanMultiplier,extras,result.reveals||[]);
  return {...result,trace,extras,total:trace.total,unpenalized:result.total,penalty:Math.max(0,result.total-trace.total),gain:trace.total,penaltyMultiplier:factor**(attackers.length*result.chicken)};
 }
 export function copyLeft(tiles){
@@ -178,6 +196,6 @@ export class Game{
   if(d.paced!==undefined&&typeof d.paced!=='boolean')fail();if(d.presentation&&(!d.paced||d.phase!=='resolving'||d.pending||!['discard','prepare'].includes(d.presentation.kind)||!Number.isInteger(d.presentation.i)||d.presentation.i<0||d.presentation.i>3||(d.presentation.kind==='discard'?!d.players[d.presentation.i].hand.some(t=>t.uid===d.presentation.uid):!d.preparation||d.preparation.stage!=='running'||d.presentation.i===0)))fail();
   if(d.preparation){const p=d.preparation;if(!['intro','running','select','discard','ready'].includes(p.stage)||!Array.isArray(p.completed)||p.completed.length>4||p.completed.some((seat,j)=>seat!==[1,2,3,0][j])||!['showdown','resolving','trim'].includes(d.phase))fail();if(['intro','select','ready'].includes(p.stage)&&d.phase!=='showdown')fail();if(p.stage==='intro'&&p.completed.length||p.stage==='select'&&p.completed.length!==3||p.stage==='ready'&&(p.completed.length!==4||d.pending||d.presentation||d.queue.length))fail();}
   for(const a of d.queue)if(!['discard','trim','bot','end','prepare-seat','prepared','human-prepare','prep-ready'].includes(a.kind)||(!['end','human-prepare','prep-ready'].includes(a.kind)&&(!Number.isInteger(a.i)||a.i<0||a.i>3))||(['prepare-seat','prepared','human-prepare','prep-ready'].includes(a.kind)&&!d.preparation))fail();
-  const game=Object.assign(Object.create(Game.prototype),d);game.config={...CONFIG,...game.config};if(game.rarityVersion!==1){game.config.odds=CONFIG.odds.slice();game.rarityVersion=1;for(const p of game.players)for(const t of p.pool)if(!t.bought){game.rebalanceNative(t);Object.assign(t,t.native);}for(const pack of game.drafts){for(const t of pack.tiles){game.rebalanceNative(t);Object.assign(t,t.native);}for(const dim of ['color','pattern','material'])pack.counts[dim]=pack.tiles.filter(t=>t[dim]).length;}}if(game.rulesVersion!==RULESET_VERSION){game.rulesVersion=RULESET_VERSION;game.addLog('已升级至v0.10规则：采用新羁绊、左邻赖子和符／番／额外乘区；历史得分保留。');}return game;
+  const game=Object.assign(Object.create(Game.prototype),d);game.config={...CONFIG,...game.config};if(game.rarityVersion!==1){game.config.odds=CONFIG.odds.slice();game.rarityVersion=1;for(const p of game.players)for(const t of p.pool)if(!t.bought){game.rebalanceNative(t);Object.assign(t,t.native);}for(const pack of game.drafts){for(const t of pack.tiles){game.rebalanceNative(t);Object.assign(t,t.native);}for(const dim of ['color','pattern','material'])pack.counts[dim]=pack.tiles.filter(t=>t[dim]).length;}}if(game.rulesVersion!==RULESET_VERSION){game.rulesVersion=RULESET_VERSION;game.addLog('已升级至v0.11规则：展示自动码牌，四搭一雀头后独立计全部小七对子，绿一色兼容传统身份与绿牌；历史得分保留。');}return game;
  }
 }
