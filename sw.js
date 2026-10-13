@@ -1,5 +1,5 @@
 const PREFIX='quexu-static-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=PREFIX+'89bc1673c78a';
+const CACHE=PREFIX+'378dfc5c246c';
 const ASSETS=['./','./index.html','./app.js','./game.js','./scoring.js','./style.css','./account.css','./local-accounts.js','./local-account-ui.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./version.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));
 self.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_UPDATE')self.skipWaiting();});
