@@ -120,3 +120,14 @@
 @media(max-width:700px) and (max-height:500px) and (orientation:landscape){.hand-zone{--tile-size:clamp(22px,calc((94vw - 60px)/var(--hand-count)),40px)}.hand-tiles{min-height:72px;padding-bottom:10px}.hand-empty{min-height:60px}.pending-discard-zone{bottom:calc(100% - 42px)}.hand-zone:has(.self-kong-dock) .pending-discard-zone{bottom:calc(100% + 7px);left:35%}}
 
 .pending-discard-tiles{touch-action:pan-x}@media(max-width:700px) and (max-height:500px) and (orientation:landscape){.pending-discard-zone{min-width:150px;max-width:calc(100% - 330px)}}
+
+/* River flowers are visible scoring components without occupying the hand row. */
+.score-flower-rack{display:inline-flex;align-items:center;gap:4px;margin-left:16px;vertical-align:middle;letter-spacing:0}.score-flower-label{font:9px system-ui;color:#b6cba6;margin-right:4px}.score-flower-rack .river-flower-tile{display:inline-flex;gap:0}.score-flower-rack .river-flower-tile .tile-face.mini{width:24px;height:34px}.flower-bonus-badge{font-size:10px;color:#ead498;border:1px solid #b4bc7580;border-radius:5px;padding:3px 6px;white-space:nowrap}.river-grid button.trait-component .tile-face{outline:2px solid #ffe8a4;box-shadow:0 2px 0 #a88b4f,0 0 15px #ffe397bb;filter:brightness(1.15)}
+@media(max-height:500px) and (orientation:landscape){.score-flower-rack{gap:3px;margin-left:10px}.score-flower-label{font-size:8px;margin-right:2px}.score-flower-rack .river-flower-tile .tile-face.mini{width:17px;height:24px}.flower-bonus-badge{font-size:8px;padding:2px 4px}}
+@media(max-height:350px) and (orientation:landscape){.score-flower-rack{gap:2px;margin-left:7px}.score-flower-rack .river-flower-tile .tile-face.mini{width:14px;height:20px}.score-flower-label{font-size:7px}}
+/* Keep pending discards beside the hand controls, clear of the river. */
+.pending-discard-zone{bottom:calc(100% - 58px);min-height:56px;max-width:min(620px,calc(100% - 580px))}
+@media(max-height:500px) and (orientation:landscape){.pending-discard-zone{bottom:calc(100% - 42px);min-height:42px;max-width:calc(100% - 410px)}}
+@media(max-width:700px) and (max-height:500px) and (orientation:landscape){.pending-discard-zone{max-width:calc(100% - 330px)}}
+.hand-zone:has(.self-kong-dock) .pending-discard-zone{bottom:calc(100% + 7px)}
+.hand-dragging .river-area.south[data-drop-zone="discard"]{min-width:160px;min-height:52px;z-index:14;border:1px dashed #c5cb9877;border-radius:7px;background:#103c3288}
