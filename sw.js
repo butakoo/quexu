@@ -1,6 +1,6 @@
 const PREFIX='quexu-static-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=PREFIX+'378dfc5c246c';
-const ASSETS=['./','./index.html','./app.js','./game.js','./scoring.js','./style.css','./account.css','./local-accounts.js','./local-account-ui.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./version.json'];
+const CACHE=PREFIX+'d1ac89128c7e';
+const ASSETS=['./','./index.html','./app.js','./game.js','./scoring.js','./trait-hints.js','./style.css','./account.css','./local-accounts.js','./local-account-ui.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./version.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));
 self.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_UPDATE')self.skipWaiting();});
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith(PREFIX)&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
