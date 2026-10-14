@@ -1,7 +1,17 @@
-import {TYPES,info,identities,copyLeft,arrangeShowcase,traitComponents} from './game.js?v=0.16.0';
+import {TYPES,info,identities,copyLeft,arrangeShowcase,traitComponents} from './game.js?v=0.19.0';
 
-export const PRESENTATION_TIMING=Object.freeze({intro:650,recode:650,name:600,impact:360,applied:300,add:560,final:850});
+export const PRESENTATION_TIMING=Object.freeze({intro:380,recode:600,name:520,impact:300,applied:180,add:300,final:650,pin:220});
 export const seatPlaybackRate=seat=>seat===0?1:1.2;
+// Only impacts and score ticks accelerate; names and regrouping keep their reading time.
+export const scoreChainRate=index=>1+Math.min(8,Math.max(0,index))*.04;
+// Presentation-only ledger. Repeated bonus names combine; multiplication remains multiplication.
+export function scoreAnnouncements(report,through=Infinity){
+ const entries=new Map();for(const step of (report.trace?.steps||[]).slice(0,through)){
+  if(step.area==='add')continue;const key=step.area+':'+(step.traitId||step.label),prior=entries.get(key);
+  if(prior){prior.count++;prior.fan+=step.fan||0;prior.amount+=step.amount||0;prior.factor*=step.factor??1;}
+  else entries.set(key,{key,label:step.label,area:step.area,count:1,fan:step.fan||0,amount:step.amount||0,factor:step.factor??1});
+ }return [...entries.values()];
+}
 const rank=face=>TYPES.findIndex(t=>t.id===face);
 const bitCount=n=>{let count=0;while(n){n&=n-1;count++;}return count;};
 const resolvedTiles=r=>{const copies=new Map((r.wildCopies||copyLeft(r.tiles).wildCopies).map(c=>[c.uid,c.face]));return r.tiles.map(t=>({...t,face:copies.get(t.uid)||t.face}));};
