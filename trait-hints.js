@@ -1,4 +1,4 @@
-import {score,copyLeft,traitComponents} from './game.js?v=0.20.0';
+import {score,copyLeft,traitComponents} from './game.js?v=0.25.0';
 
 // Return physical tile IDs. Pattern identities and left-copy wilds use the same
 // rules as settlement, without changing hand order or discard selection.
