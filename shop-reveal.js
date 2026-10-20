@@ -10,6 +10,7 @@ export class ShopReveal{
  sync(game){
   const shop=game.players[0].shop;if(game!==this.game||shop!==this.shop){this.cancel();this.game=game;this.shop=shop;this.seen.clear();}
   if(this.hidden||game.phase!=='shop'){this.cancel();return;}
+  for(const el of document.querySelectorAll('.offers .tool-offer[data-tool-shop-id]')){const key='tool:'+el.dataset.toolShopId;if(!this.seen.has(key)){this.seen.add(key);if(!this.reduced())el.classList.add('is-new-tool');this.sound('tool-find');}}
   const cards=[...document.querySelectorAll('.offers .offer[data-shop-uid]')],byId=new Map(cards.map(el=>[Number(el.dataset.shopUid),el]));
   for(const [uid,job]of this.jobs){if(!byId.has(uid)){job.timers.forEach(id=>clearTimeout(id));job.node?.remove();this.jobs.delete(uid);}else if(job.node)this.position(job.node,byId.get(uid));}
   for(const el of cards){const uid=Number(el.dataset.shopUid),tile=shop.find(t=>t?.uid===uid);if(!tile||this.seen.has(uid))continue;this.seen.add(uid);const layers=shopRevealLayers(tile);el.dataset.revealDimensions=String(layers.length);if(!layers.length)continue;

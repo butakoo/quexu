@@ -1,4 +1,4 @@
-import {owned} from './game.js?v=0.25.0';
+import {owned} from './game.js?v=0.26.1';
 
 // Only the preview excludes pending discards. Physical ownership stays unchanged.
 export function previewTiles(game,seat=0){

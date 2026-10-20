@@ -1,6 +1,6 @@
-import {LESSONS,COURSE_GROUPS} from './tutorial-data.js?v=0.25.0';
-import {tutorialMoment,tutorialTarget} from './tutorial-moments.js?v=0.25.0';
-import {TutorialAutoAdvance} from './tutorial.js?v=0.25.0';
+import {LESSONS,COURSE_GROUPS} from './tutorial-data.js?v=0.26.1';
+import {tutorialMoment,tutorialTarget} from './tutorial-moments.js?v=0.26.1';
+import {TutorialAutoAdvance} from './tutorial.js?v=0.26.1';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function createGuidance(){
  const layer=document.createElement('div');layer.id='tutorial-guidance-root';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);let signature='',elements=[],frame=null;

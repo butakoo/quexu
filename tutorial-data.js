@@ -1,4 +1,4 @@
-import {Game,owned,cap,usage,score,copyLeft,TRAIT_CATALOG,tileTier} from './game.js?v=0.25.0';
+import {Game,owned,cap,usage,score,copyLeft,TRAIT_CATALOG,tileTier} from './game.js?v=0.26.1';
 
 export const TUTORIAL_VERSION=4;
 export const COURSE_GROUPS=['入门','操作与经营','鸣牌','羁绊','特殊牌','花牌','做局','复盘与保存','挑战'];
@@ -11,11 +11,11 @@ const p=g=>g.players[0];
 export const trainingScore=g=>score(owned(p(g)).filter(t=>!g.plannedDiscards.includes(t.uid)),p(g).indicators,g.config,p(g).melds,p(g).river);
 const attrs=x=>typeof x==='string'?{face:x}:x;
 export function freshTraining(variant=0){
- const g=new Game(72019+variant);for(let i=0;i<4;i++)g.returnShop(i);
+ const g=new Game(72019+variant,{toolsEnabled:false});for(let i=0;i<4;i++)g.returnShop(i);
  g.training={kind:'lab',variant};g.log=[];g.players.forEach(q=>{q.hand=[];q.river=[];q.melds=[];q.indicators=[];q.doraActive=false;q.buys=0;});
  return attachTraining(g);
 }
-export function attachTraining(g){Object.setPrototypeOf(g,TrainingGame.prototype);return g;}
+export function attachTraining(g){g.config.toolsEnabled=false;Object.setPrototypeOf(g,TrainingGame.prototype);return g;}
 class TrainingGame extends Game{
  bot(i){if(this.training?.kind==='lab')this.returnShop(i);else super.bot(i);}
  choosePack(index){const first=this.training?.kind==='guided'&&this.players[0].packs.length===0;super.choosePack(index);if(first)setSpecialLessonOffers(this);}

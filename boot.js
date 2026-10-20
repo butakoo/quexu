@@ -38,7 +38,7 @@
  var slow = setTimeout(function () {
   problem('slow', '游戏加载较慢，请检查连接或重新加载。');
  }, 15000);
- import('./app.js?v=0.25.0').then(function () {
+ import('./app.js?v=0.26.1').then(function () {
   clearTimeout(slow);
   panel.remove();
  }).catch(function (error) {
