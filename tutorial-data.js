@@ -1,5 +1,5 @@
-import {hasMaterial,hasColor} from './special-tiles.js?v=0.28.1';
-import {Game,owned,cap,usage,score,copyLeft,TRAIT_CATALOG,tileTier} from './game.js?v=0.28.1';
+import {hasMaterial,hasColor} from './special-tiles.js?v=0.28.2';
+import {Game,owned,cap,usage,score,copyLeft,TRAIT_CATALOG,tileTier} from './game.js?v=0.28.2';
 
 export const TUTORIAL_VERSION=6;
 export const COURSE_GROUPS=['入门','操作与经营','鸣牌','羁绊','特殊牌','花牌','做局','道具','复盘与保存','挑战'];

@@ -1,4 +1,4 @@
-import {effectsOf,dimensionName} from './special-tiles.js?v=0.28.1';
+import {effectsOf,dimensionName} from './special-tiles.js?v=0.28.2';
 export const SHOP_REVEAL_TIMING=Object.freeze({durations:[1500,1000,700],strengths:[1.4,2,2.7]});
 export function shopRevealLayers(tile){
  const out=[];if(tile.color)out.push({theme:effectsOf(tile,'color').length>1?'rainbow':tile.color,label:dimensionName(tile,'color')});if(tile.material)out.push({theme:tile.material==='star'?'star':effectsOf(tile,'material')[0],label:dimensionName(tile,'material')});if(tile.pattern)out.push({theme:'pattern',label:dimensionName(tile,'pattern'),face:effectsOf(tile,'pattern')[0]});

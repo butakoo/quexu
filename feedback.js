@@ -1,4 +1,4 @@
-import {hasColor} from './special-tiles.js?v=0.28.1';
+import {hasColor} from './special-tiles.js?v=0.28.2';
 // Read-only audiovisual metadata. Never add score steps or change saved reports.
 const style=(theme,title,level,detail='')=>({theme,title,level,detail,nameMs:[0,520,660,820,960][level],holdMs:[0,300,420,560,680][level]});
 export function scoreFeedback(step){

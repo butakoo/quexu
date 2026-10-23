@@ -1,5 +1,5 @@
-import {Game,RULESET_VERSION} from './game.js?v=0.28.1';
-import {LESSONS,COACH_HINTS,createTraining,stepsFor,attachTraining,stateBefore,TUTORIAL_VERSION} from './tutorial-data.js?v=0.28.1';
+import {Game,RULESET_VERSION} from './game.js?v=0.28.2';
+import {LESSONS,COACH_HINTS,createTraining,stepsFor,attachTraining,stateBefore,TUTORIAL_VERSION} from './tutorial-data.js?v=0.28.2';
 const clone=v=>JSON.parse(JSON.stringify(v));
 const stable=g=>!g.pending&&!g.presentation&&(g.phase!=='resolving'||!g.queue.length)&&!(g.phase==='showdown'&&['intro','running'].includes(g.preparation?.stage));
 // A missed interaction is omitted, never forged. Reconciliation changes only tutorial records.

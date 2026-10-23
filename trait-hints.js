@@ -1,5 +1,5 @@
-import {hasColor} from './special-tiles.js?v=0.28.1';
-import {score,copyLeft,traitComponents} from './game.js?v=0.28.1';
+import {hasColor} from './special-tiles.js?v=0.28.2';
+import {score,copyLeft,traitComponents} from './game.js?v=0.28.2';
 
 // Return physical tile IDs. Pattern identities and left-copy wilds use the same
 // rules as settlement, without changing hand order or discard selection.

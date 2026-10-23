@@ -1,6 +1,6 @@
-import {effectsOf,hasColor,hasMaterial,isFragile,compound,validDimension,randomDimension,initializeGrowth,normalizeSpecialFlower,COLOR_NAMES,MATERIAL_NAMES} from './special-tiles.js?v=0.28.1';
-import {TOOL_TYPES,TOOL_RULES,toolOfferRate,createToolState,toolRandom,validateToolTargets,resolveTool} from './tools-core.js?v=0.28.1';
-import {calculateTrace} from './scoring.js?v=0.28.1';
+import {effectsOf,hasColor,hasMaterial,isFragile,compound,validDimension,randomDimension,initializeGrowth,normalizeSpecialFlower,COLOR_NAMES,MATERIAL_NAMES} from './special-tiles.js?v=0.28.2';
+import {TOOL_TYPES,TOOL_RULES,toolOfferRate,createToolState,toolRandom,validateToolTargets,resolveTool} from './tools-core.js?v=0.28.2';
+import {calculateTrace} from './scoring.js?v=0.28.2';
 export const RULESET_VERSION=22;
 export const SHOP_REFRESH_COST=2;
 export const JADE_BASE=1,JADE_STEP=.25,CRYSTAL_SYMBOLS=10;

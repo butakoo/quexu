@@ -1,4 +1,4 @@
-import {effectsOf,hasMaterial,isFragile,compound,randomDimension,initializeGrowth} from './special-tiles.js?v=0.28.1';
+import {effectsOf,hasMaterial,isFragile,compound,randomDimension,initializeGrowth} from './special-tiles.js?v=0.28.2';
 export const TOOL_RULES=Object.freeze({price:10,enchantDouble:.11,enchantTriple:.01});
 export const TOOL_TYPES=Object.freeze({
  wipe:Object.freeze({name:'抹',description:'转化待打区所有牌。数牌换门不换点；字与花互转，保留全部异色。'}),

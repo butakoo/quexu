@@ -255,3 +255,33 @@
 @media(max-width:700px) and (orientation:landscape){.river-area.east{left:66%}.edge-3{top:70%}}
 
 @media(max-height:500px){.table-scene>.tutorial-launcher{left:52px;top:16px;bottom:auto}}
+
+/* 侧边暗牌和副露各占一列，整体不旋转，避免旋转后的长轴越界。 */
+.edge-1,.edge-3{top:24%;bottom:17%;transform:none;width:clamp(36px,7cqw,90px);height:auto;max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:center;z-index:4}
+.edge-3{left:1%}.edge-1{right:1%}
+.edge-1 .hidden-tiles,.edge-3 .hidden-tiles{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:0;height:100%;min-width:0}
+.edge-1 .hidden-tiles{grid-column:2;grid-row:1}.edge-1 .edge-melds{grid-column:1;grid-row:1}
+.edge-1 .tile-back,.edge-3 .tile-back{flex:none;min-width:0;width:clamp(16px,3cqw,34px);height:clamp(2px,calc((59cqh - (var(--opponent-count) - 1)*2px)/var(--opponent-count)),24px);border-radius:3px;box-shadow:0 2px 0 #b9c3a7}
+.edge-1 .tile-back:after,.edge-3 .tile-back:after{inset:3px}
+.edge-1 .edge-melds,.edge-3 .edge-melds{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;max-height:100%}
+.edge-1 .edge-meld,.edge-3 .edge-meld{display:flex;flex-direction:column;gap:2px}
+.edge-1 .tile-face.mini,.edge-3 .tile-face.mini{--side-face-height:clamp(5px,calc((59cqh - (var(--meld-count) - 1)*2px - (var(--meld-groups) - 1)*6px)/var(--meld-count)),32px);height:var(--side-face-height);width:calc(var(--side-face-height)/1.4);flex:none;box-shadow:0 2px 0 #a6b598}
+.table-board{--table-mid:calc(50% - var(--rail-width)*.3)}
+.table-center{left:var(--table-mid);width:clamp(54px,min(13cqw,22cqh),112px);height:clamp(54px,min(13cqw,22cqh),112px);padding:6px;border-radius:12px}
+.round-display{width:100%;height:100%;min-width:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;align-items:center;justify-items:center;gap:2px;overflow:hidden}
+.center-state{display:block;max-width:100%;font-size:clamp(7px,2cqh,10px);line-height:1.15;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.round-display strong{font-size:clamp(16px,5cqh,34px);line-height:1;white-space:nowrap}.round-display strong small{font-size:clamp(7px,1.8cqh,10px)}
+.center-showdown{display:block;font-size:clamp(6px,1.7cqh,9px);line-height:1.1;letter-spacing:0;white-space:nowrap}.round-dots{display:flex;gap:3px;margin:0}.round-dots i{width:clamp(6px,1.5cqw,14px);height:2px}
+.river-area.north,.river-area.south{left:var(--table-mid)}
+
+.river-area.west{left:28%}
+
+.edge-1,.edge-3{width:clamp(52px,8cqw,100px)}
+.edge-1 .edge-melds,.edge-3 .edge-melds{display:grid;grid-template-columns:repeat(var(--meld-columns),minmax(0,1fr));gap:6px 3px}
+.edge-1 .tile-face.mini,.edge-3 .tile-face.mini{--side-face-height:max(1px,min(32px,calc((8cqw - 12px)/2/var(--meld-columns)*1.4),calc((59cqh - (var(--meld-slots) - 1)*2px - (var(--meld-stacks) - 1)*6px)/var(--meld-slots))))}
+
+@container(max-height:180px){.river-area.north{top:16%}.river-area.south{top:85%}.edge-2{top:0}.edge-2 .tile-back{height:6px;width:9px}.seat-3{padding:2px;gap:1px 4px}.seat-3>.avatar{height:20px;width:18px;font-size:14px}.seat-3 .seat-name{font-size:8px}.seat-3 .seat-name small{font-size:6px;margin-top:0}.seat-3 .seat-score{font-size:9px;line-height:1}}
+
+@container(max-height:180px){.river-area{--river-size:6px;--river-gap:1px;padding:0}.river-area.river-compact{--river-size:4.5px}.river-area.north{top:21%}}
+
+@container(max-height:180px){.seat-1,.seat-2{right:calc(1% + 56px);width:70px;max-width:none}}

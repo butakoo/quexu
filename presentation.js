@@ -1,4 +1,4 @@
-import {TYPES,info,identities,copyLeft,arrangeShowcase,traitComponents} from './game.js?v=0.28.1';
+import {TYPES,info,identities,copyLeft,arrangeShowcase,traitComponents} from './game.js?v=0.28.2';
 
 export const PRESENTATION_TIMING=Object.freeze({intro:380,recode:600,name:520,impact:300,applied:180,add:300,final:650,pin:220});
 export const seatPlaybackRate=seat=>seat===0?1:1.2;

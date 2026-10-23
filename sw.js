@@ -1,5 +1,5 @@
 const PREFIX='quexu-static-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
-const CACHE=PREFIX+'04c078291020';
+const CACHE=PREFIX+'3c9e8f909ef7';
 const ASSETS=['./','./index.html','./app.js','./special-tiles.js','./tools-core.js','./tool-effects.js','./tools.css','./river-layout.js','./boot.js','./startup.css','./tutorial.js','./tutorial-data.js','./tutorial-ui.js','./tutorial.css','./game.js','./scoring.js','./feedback.js','./feedback-audio.js','./music.js','./table-audio.js','./shop-reveal.js','./shop-reveal.css','./tutorial-moments.js','./hand-preview.js','./trait-hints.js','./presentation.js','./style.css','./account.css','./local-accounts.js','./local-account-ui.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./version.json','./rules.md','./synergies.md'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS))));
 self.addEventListener('message',event=>{if(event.data?.type==='ACTIVATE_UPDATE')self.skipWaiting();});
