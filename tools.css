@@ -30,3 +30,20 @@
 @media(max-height:700px){.tool-card-sigil{width:54px;height:75px;font-size:45px;margin:3px 0}.tool-offer-summary{font-size:10px;margin:4px 0 auto}}
 @media(max-height:500px) and (orientation:landscape){.tool-rack{padding:2px 4px;gap:4px}.tool-rack>span{font-size:8px;letter-spacing:0}.tool-token{flex-basis:31px;min-height:34px;padding:1px 4px}.tool-token strong{font-size:20px}.tool-token small{font-size:7px;margin-top:0}.tool-bag{gap:3px}.tool-card-sigil{width:35px;height:48px;font-size:31px;margin:1px 0}.tool-offer-summary{font-size:8px;letter-spacing:1px;margin:1px 0 auto}.tool-sigil{font-size:38px;top:calc(var(--tool-y) - 62px)}}
 @media(prefers-reduced-motion:reduce){.tool-offer.is-new-tool{animation:none}}
+/* Persistent tool illustrations remain recognizable after the entrance finishes. */
+.tool-token{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tool-offer{--tool-ink:#387d76;--tool-light:#b8eee0;overflow:hidden;border:2px solid var(--tool-ink);box-shadow:0 4px 0 #527b72,0 0 18px #94e0cb55;background:linear-gradient(150deg,#f4fff4,#c7e5dc 70%,#84b6aa)}
+.tool-offer.tool-enchant{--tool-ink:#a4792d;--tool-light:#ffe9a7;background:linear-gradient(150deg,#fffbe1,#f0dca4 65%,#c2a05e);border-color:var(--tool-ink)}
+.tool-offer.tool-fuse{--tool-ink:#796198;--tool-light:#e6cbff;background:linear-gradient(150deg,#fff3ff,#ddd1ed 65%,#a190c0);border-color:var(--tool-ink)}
+.tool-offer:before,.tool-offer:after{content:"";position:absolute;pointer-events:none;z-index:-1}
+.tool-offer:before{inset:5px;opacity:.5;border:1px solid var(--tool-ink);border-radius:8px;background:repeating-linear-gradient(162deg,transparent 0 17px,#3b8d7b55 18px 20px,transparent 21px 35px);mask-image:linear-gradient(transparent,#000 22%,#000 75%,transparent)}
+.tool-offer:after{width:175px;height:175px;left:50%;top:26%;transform:translate(-50%,-50%);border:3px double var(--tool-ink);border-radius:50%;box-shadow:0 0 0 10px #ffffff2b,0 0 0 12px var(--tool-light);opacity:.55}
+.tool-offer.tool-enchant:before{background:repeating-conic-gradient(from 22deg at 50% 37%,transparent 0 16deg,#d09c3655 17deg 18deg,transparent 19deg 30deg)}
+.tool-offer.tool-enchant:after{border-radius:12%;transform:translate(-50%,-50%) rotate(45deg);border-style:double}
+.tool-offer.tool-fuse:before{background:repeating-conic-gradient(from 20deg at 50% 36%,transparent 0 25deg,#9973c555 26deg 29deg,transparent 30deg 60deg)}
+.tool-offer.tool-fuse:after{border-radius:50% 20%;transform:translate(-50%,-50%) rotate(-25deg)}
+.tool-offer .offer-rarity,.tool-offer .offer-source{color:var(--tool-ink);font-weight:700}.tool-offer-summary{color:var(--tool-ink);font-weight:600}.tool-offer .offer-price{background:#fff8da99;border-top:1px solid var(--tool-ink);color:var(--tool-ink)}
+.tool-offer.is-new-tool{animation:tool-offer-arrive 1.35s cubic-bezier(.15,.75,.25,1) both}
+@keyframes tool-offer-arrive{0%{filter:brightness(1.45);transform:translateY(-14px) scale(.9)}22%{transform:translateY(3px) scale(1.035)}42%,100%{filter:brightness(1);transform:none}}
+@media(max-height:500px){.tool-offer:after{width:85px;height:85px;border-width:2px}}
+@media(prefers-reduced-motion:reduce){.tool-offer.is-new-tool{animation:none}}

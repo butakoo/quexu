@@ -1,6 +1,6 @@
-import {LESSONS,COURSE_GROUPS} from './tutorial-data.js?v=0.26.1';
-import {tutorialMoment,tutorialTarget} from './tutorial-moments.js?v=0.26.1';
-import {TutorialAutoAdvance} from './tutorial.js?v=0.26.1';
+import {LESSONS,COURSE_GROUPS} from './tutorial-data.js?v=0.28.1';
+import {tutorialMoment,tutorialTarget} from './tutorial-moments.js?v=0.28.1';
+import {TutorialAutoAdvance} from './tutorial.js?v=0.28.1';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function createGuidance(){
  const layer=document.createElement('div');layer.id='tutorial-guidance-root';layer.setAttribute('aria-hidden','true');document.body.appendChild(layer);let signature='',elements=[],frame=null;
@@ -17,7 +17,7 @@ export function mountTutorial({getSession,getGame,getUI,start,resume,leave,retry
  const guidance=createGuidance();
  const auto=new TutorialAutoAdvance({getSession,isReady:()=>{
   const s=getSession(),a=s?.active,u=getUI();
-  if(!a||hub||hint||u.dragging||document.hidden||document.body.classList.contains('portrait-lock')||u.push)return false;
+  if(!a||hub||hint||u.dragging||u.toolBusy||document.hidden||document.body.classList.contains('portrait-lock')||u.push)return false;
   if(u.modal&&!['report'].includes(u.modal.type))return false;
   if((s.task.report||a.steps[a.step+1]?.setup)&&u.scoring&&!u.scoring.unlocked)return false;
   return !document.querySelector('.hand-drag-ghost');

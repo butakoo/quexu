@@ -1,3 +1,4 @@
+import {hasColor} from './special-tiles.js?v=0.28.1';
 // Read-only audiovisual metadata. Never add score steps or change saved reports.
 const style=(theme,title,level,detail='')=>({theme,title,level,detail,nameMs:[0,520,660,820,960][level],holdMs:[0,300,420,560,680][level]});
 export function scoreFeedback(step){
@@ -20,7 +21,8 @@ export function feedbackCues(report){
  const centers=tiles.filter(t=>t.face==='h-4');
  if(centers.length>=3)cues.push({...style('wild','赖子',2,'左邻复制'),uids:[...new Set([...centers.map(t=>t.uid),...(report.wildCopies||[]).map(t=>t.leftUid).filter(Boolean)])]});
  if(report.chicken>=2)cues.push({...style('chicken','捉鸡',2,'鸡牌符×2'),uids:tiles.filter(t=>['2-1','1-8'].includes(resolved.get(t.uid)||t.face)).map(t=>t.uid)});
- if(report.red>=2)cues.push({...style('dora','宝牌',2,report.dora?'宝牌＋'+report.dora+'符':'红宝共鸣'),uids:all.filter(t=>t.color==='red').map(t=>t.uid)});
- return cues.map(c=>({...c,key:'cue:'+c.theme,area:'cue',label:c.title}));
+ if(report.red>=2)cues.push({...style('dora','宝牌',2,report.dora?'宝牌＋'+report.dora+'符':'红宝共鸣'),uids:all.filter(t=>hasColor(t,'red')).map(t=>t.uid)});
+ for(const [dim,value,title,theme]of [['color','rainbow','虹宝','dora'],['pattern','infinite','无穷纹路','wild'],['material','star','星核','diamond']]){const uids=all.filter(t=>t[dim]===value).map(t=>t.uid);if(uids.length)cues.push({...style(theme,title,4,'顶级异色'),key:'cue:apex:'+dim,uids});}
+ return cues.map(c=>({...c,key:c.key||'cue:'+c.theme,area:'cue',label:c.title}));
 }
 export const feedbackEntries=(report,through=Infinity)=>feedbackCues(report).slice(0,through).map(({key,area,label,detail})=>({key,area,label,text:detail}));

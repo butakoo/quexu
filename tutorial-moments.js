@@ -20,8 +20,16 @@ export function tutorialMoment(g,ui){
  return null;
 }
 export function tutorialTarget(task,g){
+ if(task.kind==='tool-stage'){
+  const id=g.training?.toolLesson?.uids.find(id=>!g.plannedDiscards.includes(id)&&g.players[0].hand.some(t=>t.uid===id));
+  return id?'.hand-tiles .tile-button[data-uid="'+id+'"]':'.pending-discard-zone';
+ }
+ if(task.kind==='tool-unstage'){
+  const id=g.training?.toolLesson?.uids.find(id=>g.plannedDiscards.includes(id));
+  if(id)return '.pending-discard-tiles .tile-button[data-uid="'+id+'"]';
+ }
  if(task.kind==='buy'){const i=g.players[0].shop.findIndex(t=>t?.face===task.face);if(i>=0)return '.offer[data-index="'+i+'"]';}
- if(task.kind==='unstage'){const tile=g.players[0].hand.find(t=>t.face===task.face&&g.plannedDiscards.includes(t.uid));if(tile)return '.pending-discard-tiles [data-uid="'+tile.uid+'"]';}
+ if(task.kind==='unstage'){const tile=g.players[0].hand.find(t=>t.face===task.face&&g.plannedDiscards.includes(t.uid));if(tile)return '.pending-discard-tiles .tile-button[data-uid="'+tile.uid+'"]';}
  if(task.kind==='take'){const tile=g.players[0].river.find(t=>t.face===task.face);if(tile)return '.river-pickable[data-uid="'+tile.uid+'"]';}
  if(task.target==='.offers')return '.offer[data-index="0"]';
  if(task.target==='.hand-tiles')return '.hand-tiles > .tile-wrap:first-child .tile-button';

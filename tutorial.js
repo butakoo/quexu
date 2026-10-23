@@ -1,12 +1,18 @@
-import {Game,RULESET_VERSION} from './game.js?v=0.26.1';
-import {LESSONS,COACH_HINTS,createTraining,stepsFor,attachTraining,stateBefore,TUTORIAL_VERSION} from './tutorial-data.js?v=0.26.1';
+import {Game,RULESET_VERSION} from './game.js?v=0.28.1';
+import {LESSONS,COACH_HINTS,createTraining,stepsFor,attachTraining,stateBefore,TUTORIAL_VERSION} from './tutorial-data.js?v=0.28.1';
 const clone=v=>JSON.parse(JSON.stringify(v));
 const stable=g=>!g.pending&&!g.presentation&&(g.phase!=='resolving'||!g.queue.length)&&!(g.phase==='showdown'&&['intro','running'].includes(g.preparation?.stage));
 // A missed interaction is omitted, never forged. Reconciliation changes only tutorial records.
 export function missedTask(task,a){
  const g=a.game,w=task.window,b=a.segmentBefore||a.before;
  if(a.id==='A'){
-  if(task.kind==='buy'&&g.phase==='shop'&&(!g.players[0].shop.some(t=>t?.face===task.face)||g.players[0].buys>=g.config.maxBuy))return true;
+  if(task.kind?.startsWith('tool-')||['buy-tool','use-tool'].includes(task.kind)){
+   const l=g.training.toolLesson;
+   if(g.round>=7&&!l)return true;
+   if(l&&task.kind==='buy-tool'&&!g.items.offers[0].some(t=>t?.id===l.itemId)&&!g.items.bags[0].some(t=>t.id===l.itemId))return true;
+   if(l&&['tool-stage','tool-unstage','use-tool'].includes(task.kind)&&l.uids.some(id=>!g.players[0].hand.some(t=>t.uid===id)))return true;
+  }
+  if(task.kind==='buy'&&g.phase==='shop'&&(!g.players[0].shop.some(t=>t?.face===task.face)))return true;
   if(['stage','unstage'].includes(task.kind)&&g.canPlanDiscards()&&!g.players[0].hand.some(t=>t.face===task.face))return true;
   if(task.kind==='swap'&&(!g.players[0].hand.some(t=>t.face==='2-7')||!g.players[0].hand.some(t=>t.face==='0-1')))return true;
   if(w){
@@ -19,6 +25,12 @@ export function missedTask(task,a){
   }
   return a.step===23&&g.phase==='over';
  }
+ if(['tool-stage','tool-unstage','buy-tool','use-tool'].includes(task.kind)){
+  const l=g.training.toolLesson;
+  if(l&&['tool-stage','tool-unstage','use-tool'].includes(task.kind)&&l.uids.some(id=>!g.players[0].hand.some(t=>t.uid===id)))return true;
+  if(l&&task.kind==='buy-tool'&&!g.items.offers[0].some(t=>t?.id===l.itemId)&&!g.items.bags[0].some(t=>t.id===l.itemId))return true;
+  if(l&&task.kind==='use-tool'&&!l.used&&!g.items.bags[0].some(t=>t.id===l.itemId)&&!g.items.offers[0].some(t=>t?.id===l.itemId))return true;
+ }
  if(g.phase==='over'&&!task.options&&!task.tool)return true;
  if(!stable(g)||task.options||task.report||task.tool)return false;
  if(task.kind==='call'&&!g.pending)return true;
@@ -26,9 +38,9 @@ export function missedTask(task,a){
  const target=task.target||'';
  if(!target)return false; // Open challenges may span many rounds.
  if(g.round>b.round)return true;
- if(/offers|upgrade|refresh-shop|drop-zone/.test(target))return g.phase!=='shop'||/offers/.test(target)&&g.players[0].buys>=g.config.maxBuy;
+ if(/offers|tool-offer|upgrade|refresh-shop|drop-zone/.test(target))return g.phase!=='shop';
  if(task.kind==='take')return ['result','over','draft'].includes(g.phase)||g.preparation?.stage==='select'&&!g.players[0].river.some(t=>t.face===task.face);
- if(/hand-tiles|pending-discard|claim-dock|kong-dock|data-trait-id|hand-capacity/.test(target)){
+ if(/hand-tiles|pending-discard|claim-dock|kong-dock|data-trait-id|hand-capacity|tool-rack/.test(target)){
   if(['result','over','draft'].includes(g.phase))return true;
   if(b.phase==='shop'&&g.phase==='showdown'&&g.preparation?.stage==='select')return true;
  }
@@ -40,11 +52,13 @@ export class TutorialSession{
   this.storage=storage;this.key='quexu-tutorial-v1:'+encodeURIComponent(scope)+':'+accountId;
   this.progress={version:TUTORIAL_VERSION,rules:RULESET_VERSION,completed:{},mastered:{},coach:false,seen:[],resume:null};this.active=null;this.error=null;
   try{
-   const d=JSON.parse(storage.getItem(this.key)||'null');
+   const d=JSON.parse(storage.getItem(this.key)||'null');if(d?.rules===21)d.rules=RULESET_VERSION;
    if(d?.version===1&&d.rules===RULESET_VERSION&&d.completed&&d.mastered){d.version=2;d.completed={...d.completed};d.mastered={...d.mastered};delete d.completed.A;delete d.mastered.A;if(d.resume?.id==='A')d.resume=null;}
    // Step keys and indices remain stable, including live v2 snapshots and checkpoints.
    if(d?.version===2&&d.rules===RULESET_VERSION)d.version=3;
-   if(d?.version===3&&d.rules===RULESET_VERSION){if(d.resume?.id==='A'){const remap=i=>i>=26?i+3:i;const r=d.resume;if(r.step===26&&!r.finished){r.step=26;r.answer=null;r.passed=false;}else r.step=remap(r.step);if(Array.isArray(r.skipped))r.skipped=r.skipped.map(remap);}d.version=TUTORIAL_VERSION;}
+   if(d?.version===3&&d.rules===RULESET_VERSION){if(d.resume?.id==='A'){const remap=i=>i>=26?i+3:i;const r=d.resume;if(r.step===26&&!r.finished){r.step=26;r.answer=null;r.passed=false;}else r.step=remap(r.step);if(Array.isArray(r.skipped))r.skipped=r.skipped.map(remap);}d.version=4;}
+   if(d?.version===4&&d.rules===RULESET_VERSION){if(d.resume?.id==='A'){const remap=i=>i>=29?i+5:i;d.resume.step=remap(d.resume.step);if(Array.isArray(d.resume.skipped))d.resume.skipped=d.resume.skipped.map(remap);}d.version=5;}
+   if(d?.version===5&&d.rules===RULESET_VERSION)d.version=TUTORIAL_VERSION;
    if(d?.version===TUTORIAL_VERSION&&d.rules===RULESET_VERSION&&d.completed&&typeof d.completed==='object'&&!Array.isArray(d.completed)&&d.mastered&&typeof d.mastered==='object'&&!Array.isArray(d.mastered)&&Array.isArray(d.seen))this.progress={...this.progress,...d};
   }catch{this.error='练习记录暂时无法读取；正式牌局未改动。';}
  }
